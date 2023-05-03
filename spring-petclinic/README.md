@@ -7,17 +7,16 @@ The Spring PetClinic is a sample application designed to show how the Spring sta
 
 The project uses Maven to structure and bootstrap a Spring core 3.0.6 application deployed onto a Tomcat 8.5 container. MySQL 5.7.8 database provides persistent storage support 
 
-
-## Prerequisites
+## Running PetClinic locally using Docker
 <hr/>
+
+### Prerequisites
 The following should be installed in your system:
 
 * [Docker](https://docs.docker.com/engine/install/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-
-## Running PetClinic locally
-<hr/>
+### Steps
 
 - From a new terminal window inside the `spring-petclinic` folder, run the following command:
 
@@ -33,9 +32,90 @@ The following should be installed in your system:
    docker compose ps
   ```
 
-You can then access PetClinic here: [http://localhost:8080/](http://localhost:8080/)
+You can then access PetClinic here: [http://localhost:8080/petclinic](http://localhost:8080/petclinic)
+
+## Running PetClinic locally without Docker
+<hr/>
+This section describes the manual steps for installing MySQL, Tomcat and then deploying the application to the Tomcat Server
+
+### Prerequisites
+- Java 1.8 
+- [Homebrew](https://brew.sh/)
+
+### Steps
+
+- Install MySQL
+
+    ```bash
+    brew install mysql@5.7
+    ```
+- Set up path for mysql
+
+    ```bash
+    export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
+    ```
+  
+- Set up password authentication using
+
+    ```bash
+    mysql_secure_installation
+    ```
+  Answer the prompts with the following:
+
+  - VALIDATE PASSWORD plugin: `Y`
+  - Password Validation Policy: `0` (LOW)
+  - New Password: `password`
+  - Renter Password: `password`
+  - Do you wish to continue with the password: `Y`
+  - Remove anonymous user: `Y`
+  - Disallow root login from remote: `Y`
+  - Remove the test database: `Y`
+  - Reload privilege tables now: `Y`
 
 
+- Create the `petclinic` database 
+
+    - Log in to MySQL server
+    ```
+     mysql -uroot -ppassword
+
+    ```
+  
+    - Create the database
+    ```
+     CREATE DATABASE `petclinic` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    ```
 
 
+- Set up Tomcat on your machine
 
+  - Start by [downloading the binary](https://tomcat.apache.org/download-80.cgi)
+  
+  - Extract to a location and inside the bin directory start the Tomcat server using the below command
+    ```bash
+    ./catalina.sh run
+    ```
+
+    Browse to http://localhost:8080, and you should see the Tomcat installation page.
+  
+
+- From a new terminal window inside the `spring-petclinic` folder, package the application with the following command:
+
+    ```bash
+    ./mvnw clean package
+    ```
+    This will create a `petclinic.war` file inside the `target` folder
+
+
+ - Deploy the WAR to `webapps` inside the tomcat installation folder
+
+    ```bash
+    cp ./target/petclinic.war <TOMCAT_INSTALLATION>/webapps/
+    ```
+
+- Stop (`Ctrl+C`) and Start the Tomcat container by following the steps as before
+    
+
+Alternatively, You can use the IDE to add Tomcat as a server and deploy the artifact. The instructions can be found [here](https://www.jetbrains.com/idea/guide/tutorials/working-with-apache-tomcat/using-existing-application/) 
+
+You can then access PetClinic here: [http://localhost:8080/petclinic](http://localhost:8080/petclinic)

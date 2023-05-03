@@ -19,9 +19,7 @@ services:
     container_name: petclinic
     restart: always
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/petclinic
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=password
+      - MYSQL_HOST=mysql
     ports:
       - "8080:8080"
     depends_on:
