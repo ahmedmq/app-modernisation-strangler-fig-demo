@@ -7,7 +7,7 @@ See Git tags for step-by-step progress of modernisation of the application in sc
 ```text
 $ git tag -ln
 
-v1			Spring PetClinic Monolith Baseline
+v1.0.0			Spring PetClinic Monolith Baseline
 ```
 
 ## Introduction
@@ -17,8 +17,12 @@ One of the most common techniques in application modernization is the Strangler 
 
 In the context of app modernization we can draw a parallel here, where we can incrementally build microservices that replicate functionality of the existing monolith. The idea is that the old legacy monolith  and the new microservices can coexist and we can evolve the new services over time with the same functionality provided by the monolith and eventually replacing the old system
 
+The following sections describe the Git commit tags (shown above) made in order to modernise the Spring PetClinic application using the Strangler Fig Pattern.
+
 ### v1: Spring PetClinic Monolith Baseline
 
-Spring PetClinic is an open-source sample application created by SpringSource for the Spring Framework. It is designed to display and manage information related to pets and veterinarians in a pet clinic. Instructions to run the baseline application can be found in the [spring-petclinic/README.md](spring-petclinic/README.md) file.
+Spring PetClinic is an open-source sample application created by SpringSource for the Spring Framework. It is designed to display and manage information related to pets and veterinarians in a pet clinic. Instructions to run the baseline application locally can be found in the [spring-petclinic/README.md](spring-petclinic/README.md) file.
 
 ![](docs/baseline.png)
+
+The monolithic application consists of four different modules all packaged and deployed as a single artefact onto a Tomcat Application server. All data related to the modules is stored in a single MySQL database.

@@ -23,7 +23,7 @@ The following should be installed in your system:
     ```bash
     docker compose up -d
     ```
-    This will build the web application and run it as as docker container. The MySQL database is also started as a container
+    This will build the web application and run it as a docker container. The MySQL database is also started as a container
 
   
 - Wait for all docker containers to be up and running. Check using the following command:
@@ -32,7 +32,21 @@ The following should be installed in your system:
    docker compose ps
   ```
 
-You can then access PetClinic here: [http://localhost:8080/petclinic](http://localhost:8080/petclinic)
+  The [dockerfile](./Dockerfile) includes a command to change the default Tomcat port to `80`
+
+
+- Update `/etc/hosts` file in your local system to map a sample domain to `localhost`
+
+  ```bash
+  sudo vi /etc/hosts
+  ```
+  After you enter your password, add the below domain mapping
+
+  ```text
+  127.0.0.1 strangler-fig.demo
+  ```
+
+You can then access PetClinic here: [http://strangler-fig.demo/petclinic](http://strangler-fig.demo/petclinic)
 
 ## Running PetClinic locally without Docker
 <hr/>
@@ -113,9 +127,33 @@ This section describes the manual steps for installing MySQL, Tomcat and then de
     cp ./target/petclinic.war <TOMCAT_INSTALLATION>/webapps/
     ```
 
+- For the purpose of this demo, change the Tomcat port number to `80`. Edit the main `Connector` element in the `tomcat/conf/server.xml` file. Find the XML tag that looks something like this:
+
+    ```text
+    <!-- Define a non-SSL HTTP/1.1 Connector on port 8080 -->
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+    ```
+
+  Once you locate the above, change the port attribute from `8080` to `80`
+
+
 - Stop (`Ctrl+C`) and Start the Tomcat container by following the steps as before
+
+
+- Update `/etc/hosts` file in your local system to map a sample domain to `localhost`
+    
+  ```bash
+  sudo vi /etc/hosts
+  ```
+  After you enter your password, add the below domain mapping
+
+  ```text
+  127.0.0.1 strangler-fig.demo
+  ```
     
 
 Alternatively, You can use the IDE to add Tomcat as a server and deploy the artifact. The instructions can be found [here](https://www.jetbrains.com/idea/guide/tutorials/working-with-apache-tomcat/using-existing-application/) 
 
-You can then access PetClinic here: [http://localhost:8080/petclinic](http://localhost:8080/petclinic)
+You can then access PetClinic here: [http://strangler-fig.demo/petclinic](http://strangler-fig.demo/petclinic)
