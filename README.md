@@ -1,6 +1,6 @@
 # Application Modernisation using Strangler Fig Pattern
 
-This repo contains a step-by-step tutorial on implementing a strangler fig pattern to decompose a legacy monolith into microservices and deploying to Kubernetes.
+This repo contains a step-by-step tutorial on implementing a strangler fig pattern using CDC (Change Data Capture) to decompose a legacy monolith into microservices and deploying to Kubernetes.
 
 See Git tags for step-by-step progress of modernisation of the application in scope. Clone this repository and run the below command from the root of the project folder:
 
@@ -20,3 +20,5 @@ In the context of app modernization we can draw a parallel here, where we can in
 ### v1: Spring PetClinic Monolith Baseline
 
 Spring PetClinic is an open-source sample application created by SpringSource for the Spring Framework. It is designed to display and manage information related to pets and veterinarians in a pet clinic. Instructions to run the baseline application can be found in the [spring-petclinic/README.md](spring-petclinic/README.md) file.
+
+![](docs/baseline.png)
