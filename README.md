@@ -9,6 +9,7 @@ $ git tag -ln
 
 v1.0.0			Spring PetClinic Monolith Baseline
 v2.0.0                  Add Strangler Proxy
+v3.0.0                  Create new replacement service
 ```
 
 ## Introduction
@@ -50,4 +51,24 @@ Introduce a proxy into the infrastructure and configure the network to route all
 
 Access the NGINX index page on [http://strangler-fig.demo/](http://strangler-fig.demo/).
 
-The PetClinic application can be accessed on : [http://strangler-fig.demo/petclinic](http://strangler-fig.demo/petclinic) 
+The PetClinic application can be accessed on : [http://strangler-fig.demo/petclinic](http://strangler-fig.demo/petclinic)
+
+### v3.0.0 - Create new replacement service 
+<hr/>
+
+Incrementally build the owner functionality in a new microservice. The new service is re-written using a modern toolkit.  Instructions to run the baseline application locally can be found in the [petclinic-owner-service/README.md](petclinic-owner-service/README.md) file.
+
+It is worth noting that in this step , we can have the new service deployed into a production environment and wait until the functionality is full tested, with the understanding that no live traffic is handled by the new service
+
+![New Service](docs/new_service.png)
+
+In this step, only the READ functionality is implemented within the new microservice.
+
+| Description      | HTTP Method | API               | Implemented |
+|------------------|-------------|-------------------|-------------|
+| Find Owners      | GET         | /owners/find      | Yes         |
+| List All Owners  | GET         | /owners           | Yes         |
+| Get Owner by Id  | GET         | /owners/{id}      | Yes         |
+| Create New Owner | POST        | /owners/new       | No          |
+| Edit Owner       | POST        | /owners/{id}/edit | No          |
+
