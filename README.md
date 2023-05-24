@@ -10,6 +10,7 @@ $ git tag -ln
 v1.0.0			Spring PetClinic Monolith Baseline
 v2.0.0                  Add Strangler Proxy
 v3.0.0                  Create new replacement service
+v4.1.0                  Setup Debezium for CDC from MySQL source
 ```
 
 ## Introduction
@@ -17,7 +18,7 @@ One of the most common techniques in application modernization is the Strangler 
 
 ![](docker/nginx/volume/strangler-fig.jpg)
 
-In the context of app modernization we can draw a parallel here, where we can incrementally build microservices that replicate functionality of the existing monolith. The idea is that the old legacy monolith  and the new microservices can coexist and we can evolve the new services over time with the same functionality provided by the monolith and eventually replacing the old system
+In the context of app modernization we can draw a parallel here, where we can incrementally build microservices that replicate functionality of the existing monolith. The idea is that the old legacy monolith  and the new microservices can coexist, and we can evolve the new services over time with the same functionality provided by the monolith and eventually replacing the old system
 
 The following sections describe the Git commit tags (shown above) made in order to modernise the Spring PetClinic application using the Strangler Fig Pattern.
 
@@ -72,3 +73,60 @@ In this step, only the READ functionality is implemented within the new microser
 | Create New Owner | POST        | /owners/new       | No          |
 | Edit Owner       | POST        | /owners/{id}/edit | No          |
 
+
+### v4.1.0 - Setup Debezium for CDC from MySQL source
+<hr/>
+
+Use [Change Data Capture](https://www.redhat.com/en/topics/integration/what-is-change-data-capture)(CDC) to convert updates to `owners` and `pets` data in the monolith to an Event Stream that will be propagated into Kafka topics. CDC is implemented using the open source distributed platform [Debezium](https://debezium.io/).
+
+Debezium [MySQL](https://debezium.io/documentation/reference/stable/connectors/mysql.html) source connector sends updates in the Monolith database (Owner and Pets data) to Kafka 
+
+![CDC Read](docs/cdc_read.png)
+
+- From the root of the project, run the following command
+    ```bash
+    docker compose up -d
+    ```
+  This will start the Spring PetClinic app, MySQL database, Kafka, Zookeeper, Kafka Connect and Kafka UI docker containers
+
+
+- Wait for all docker containers to be up and running. Check using,
+    ```bash
+    docker compose ps
+    ```
+
+- Run the following `curl` commands to create `Debezium` connectors in `kafka-connect`
+
+    ```bash
+      curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mysql-source-owners-pets.json
+    ```
+
+- Check the status of the connector by calling `kafka-connect` endpoint
+
+    ```bash
+    curl localhost:8083/connectors/mysql-source-owners-pets/status
+    ```
+  
+   The below output should be displayed
+    ```
+  {"name":"mysql-source-owners-pets","connector":{"state":"RUNNING","worker_id":"kafka-connect:8083"},"tasks":[{"id":0,"state":"RUNNING","worker_id":"kafka-connect:8083"}],"type":"source"}%  
+    ```
+
+Alternatively you can access [Kafka-UI](http://localhost:8087)
+
+![](docs/kafka-ui-connector.png)
+
+- The state of the connectors and their tasks must be RUNNING. If there is any problem, you can check kafka-connect container logs.
+
+    ```bash
+    docker logs kafka-connect
+    ```
+
+Once the source connector is running, an initial dump of the `owner` and `pet` data from MySQL is propagated to Kafka. This can be seen in the [topics](http://localhost:8087/ui/clusters/local/all-topics) page of Kafka-UI. 
+
+The below screenshot shows the initial dump of the MySQL `owners` table data propagated to the kafka topic `mysql.petclinic.owners`
+![new topics](docs/cdc_topic.png)
+
+The `mysql.petclinic.owners` topic contains change events from the pet clinic owners table. Each record is keyed by the owner ID
+
+The `mysql.petclinic.pets` topic contains change events from the pet clinic pet table. Each record is keyed by the pet ID
