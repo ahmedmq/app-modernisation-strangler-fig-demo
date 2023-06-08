@@ -13,7 +13,11 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=petclinic
     healthcheck:
-      test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
+      test: [ "CMD", "curl", "--silent", "--fail", "-X", "GET", "http://localhost:8080/petclinic" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
   app:
     build: .
     container_name: petclinic
@@ -23,7 +27,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "-X", "GET", "http://localhost:8080/petclinic" ]
       start_period: 10s

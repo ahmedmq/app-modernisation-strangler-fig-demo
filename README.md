@@ -11,6 +11,7 @@ v1.0.0			Spring PetClinic Monolith Baseline
 v2.0.0                  Add Strangler Proxy
 v3.0.0                  Create new replacement service
 v4.1.0                  Setup Debezium for CDC from MySQL source
+v4.2.0                  Build data streaming pipeline to emit aggregated results 
 ```
 
 ## Introduction
@@ -130,3 +131,15 @@ The below screenshot shows the initial dump of the MySQL `owners` table data pro
 The `mysql.petclinic.owners` topic contains change events from the pet clinic owners table. Each record is keyed by the owner ID
 
 The `mysql.petclinic.pets` topic contains change events from the pet clinic pet table. Each record is keyed by the pet ID
+
+### v4.2.0 - Build data streaming pipeline to emit aggregated results
+<hr/>
+
+The two tables `owners` and `pets` in the Spring PetClinic database represent a 1:n relationship where an owner can have multiple pets. Debezium will emit change events for each table(`owners` and `pets` ) on distinct topics (`mysql.petclinic.owners` and `mysql.petclinic.pets` ). However,  we want to store this information as a single MongoDB document representing an owner and all their pets.
+
+In order to achieve the above, we build a Kafka Streams application to join, aggregate records that arrive at the two topics and output a nested structure into a new topic. Additional information on the `kstream-owner-pet-table-join` application is documented in the [kstream-owner-pet-table-join/README.md](kstream-owner-pet-table-join/README.md)
+
+- Repeat the steps from the previous tag(v4.1.0) to start all the containers and create the connector. The [docker-compose.yaml](docker-compose.yaml) also starts the `kstream-owner-pet-table-join` application
+- Once all the containers have started and the connector is running, we can use Kafka-UI [topic](http://localhost:8087/ui/clusters/local/all-topics/mongo.petclinic.owner.pets/messages?keySerde=String&valueSerde=String&limit=100) to see the nested record in the `mongo.petclinic.owner.pets` topic
+
+![Kstream pipeline output](docs/join_topic.png)

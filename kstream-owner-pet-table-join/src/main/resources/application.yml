@@ -1,0 +1,37 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        KStreamPetOwnerJoinTopology-in-0:
+          destination: mysql.petclinic.owners
+        KStreamPetOwnerJoinTopology-in-1:
+          destination: mysql.petclinic.pets
+        KStreamPetOwnerJoinTopology-out-0:
+          destination: mongo.petclinic.owner.pets
+      kafka:
+        streams:
+          binder:
+            configuration:
+              default:
+                key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+          bindings:
+            KStreamPetOwnerJoinTopology-in-0:
+              consumer:
+                keySerde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerJsonSerde
+            KStreamPetOwnerJoinTopology-in-1:
+              consumer:
+                keySerde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.PetJsonSerde
+            KStreamPetOwnerJoinTopology-out-0:
+              producer:
+                keySerde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerWithPetsSerde
+    function:
+      definition: KStreamPetOwnerJoinTopology
+server:
+  port: 8084
+#logging:
+#  level:
+#    org.springframework.kafka: debug

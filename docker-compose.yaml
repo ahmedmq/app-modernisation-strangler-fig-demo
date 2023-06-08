@@ -13,7 +13,10 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=petclinic
     healthcheck:
-      test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      start_period: 10s
+      timeout: 20s
+      retries: 10
 
   app:
     extends:
@@ -54,10 +57,13 @@ services:
       - "29092:29092"
       - "9997:9997"
     environment:
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_ADVERTISED_HOST_NAME: kafka
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "9092" ]
       start_period: 15s
@@ -114,3 +120,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  kstream-owner-pet-table-join:
+    build: kstream-owner-pet-table-join
+    container_name: kstream-owner-pet-table-join
+    depends_on:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8084:8084"

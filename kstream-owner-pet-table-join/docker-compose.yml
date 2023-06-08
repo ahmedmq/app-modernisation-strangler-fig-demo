@@ -1,0 +1,54 @@
+version: "3.9"
+volumes:
+  mysql-data: {}
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.1
+    container_name: zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    healthcheck:
+      test: "echo stat | nc localhost $$ZOOKEEPER_CLIENT_PORT"
+      start_period: 10s
+      retries: 20
+      interval: 10s
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.1
+    container_name: kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9997:9997"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - "8087:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
