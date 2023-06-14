@@ -12,6 +12,4 @@ RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/2.2
 && tar -xvzf /tmp/debezium-connector-mysql.tar.gz --directory /usr/share/java/ \
 && rm /tmp/debezium-connector-mysql.tar.gz
 
-RUN wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/2.2.1.Final/debezium-connector-mongodb-2.2.1.Final-plugin.tar.gz -O /tmp/debezium-connector-mongodb.tar.gz \
-&& tar -xvzf /tmp/debezium-connector-mongodb.tar.gz --directory /usr/share/java/ \
-&& rm /tmp/debezium-connector-mongodb.tar.gz
+RUN wget https://repo1.maven.org/maven2/org/mongodb/kafka/mongo-kafka-connect/1.10.1/mongo-kafka-connect-1.10.1-all.jar -O /usr/share/java/mongo-kafka-connect-1.10.1-all.jar

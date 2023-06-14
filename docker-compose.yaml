@@ -92,6 +92,8 @@ services:
     restart: unless-stopped
     depends_on:
       - kafka
+      - mysql
+      - mongodb
     ports:
       - "8083:8083"
     environment:
@@ -129,3 +131,7 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8084:8084"
+  mongodb:
+    extends:
+      file: petclinic-owner-service/docker-compose.yml
+      service: mongodb
