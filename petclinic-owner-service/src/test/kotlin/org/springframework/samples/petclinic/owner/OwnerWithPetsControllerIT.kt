@@ -21,7 +21,7 @@ import java.time.LocalDate
 @Testcontainers
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class OwnerControllerIT {
+class OwnerWithPetsControllerIT {
 
     companion object {
         @Container
@@ -35,7 +35,7 @@ class OwnerControllerIT {
     }
 
     @Autowired
-    private lateinit var owners: OwnerRepository
+    private lateinit var ownerWithPetsRepository: OwnerWithPetsRepository
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -43,26 +43,28 @@ class OwnerControllerIT {
     @Test
     fun shouldReturnOwners() {
 
-        val george = Owner(
-                id = ObjectId(),
-                ownerId = 1,
-                firstName = "George",
-                lastName = "Franklin",
-                address = "110 W. Liberty St.",
-                city = "Madison",
-                telephone = "6085551023",
+        val georgeWithMax = OwnerWithPets(id = ObjectId(),
+                owner = Owner(
+                        id = 1,
+                        firstName = "George",
+                        lastName = "Franklin",
+                        address = "110 W. Liberty St.",
+                        city = "Madison",
+                        telephone = "6085551023"
+                ),
                 pets = mutableSetOf(Pet(
+                        id = 1,
                         name = "Max",
-                        birthDate = LocalDate.now()
-                ))
-        )
+                        birthDate = LocalDate.now().toString(),
+                        type = 1
+                )))
 
-        owners.save(george)
+        ownerWithPetsRepository.save(georgeWithMax)
 
         mockMvc.perform(MockMvcRequestBuilders.get("/owners")
                 .param("lastName", "Franklin")
         )
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection)
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + george.ownerId))
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + georgeWithMax.owner.id))
     }
 }

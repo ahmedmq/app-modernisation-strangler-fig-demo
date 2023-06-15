@@ -1,8 +1,15 @@
 version: "3.9"
 services:
-  mongo:
+  mongodb:
     image: mongo:6.0
-    container_name: mongo
+    hostname: mongodb
+    container_name: mongodb
     ports:
       - "27017:27017"
-    restart: always
+    restart: on-failure
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s

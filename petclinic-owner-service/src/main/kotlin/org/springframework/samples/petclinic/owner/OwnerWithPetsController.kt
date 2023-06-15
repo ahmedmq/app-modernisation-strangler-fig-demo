@@ -9,7 +9,7 @@ import java.lang.RuntimeException
 import java.util.*
 
 @Controller
-class OwnerController(val owners: OwnerRepository) {
+class OwnerWithPetsController(val ownerWithPetsRepository: OwnerWithPetsRepository) {
 
     @GetMapping("/owners/find")
     fun initFindForm(model: MutableMap<String, Any>): String {
@@ -20,9 +20,9 @@ class OwnerController(val owners: OwnerRepository) {
     @GetMapping("/owners")
     fun processFindForm(owner: Owner, result: BindingResult, model: MutableMap<String, Any>): String {
         val results = if (owner.lastName.isEmpty()){
-            owners.findAll()
+            ownerWithPetsRepository.findAll()
         }else {
-            owners.findByLastName(owner.lastName)
+            ownerWithPetsRepository.findByOwnerLastName(owner.lastName)
         }
         return when {
             results.isEmpty() -> {
@@ -32,7 +32,7 @@ class OwnerController(val owners: OwnerRepository) {
             }
             results.size == 1 -> {
                 // 1 owner found
-                "redirect:/owners/" + results.first().ownerId
+                "redirect:/owners/" + results.first().owner.id
             }
             else -> {
                 // multiple owners found
@@ -43,9 +43,9 @@ class OwnerController(val owners: OwnerRepository) {
     }
 
     @GetMapping("/owners/{ownerId}")
-    fun showOwner(@PathVariable("ownerId") ownerId: Int, model: Model): String {
-        val owner = this.owners.findByOwnerId(ownerId).orElseThrow { RuntimeException("Owner not found") }
-        model.addAttribute(owner)
+    fun showOwner(@PathVariable("ownerId") ownerId: Long, model: Model): String {
+        val ownerWithPets = this.ownerWithPetsRepository.findByOwnerId(ownerId).orElseThrow { RuntimeException("Owner $ownerId not found") }
+        model.addAttribute("ownerWithPets",ownerWithPets)
         return "owners/ownerDetails"
     }
 
