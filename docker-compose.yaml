@@ -135,3 +135,13 @@ services:
     extends:
       file: petclinic-owner-service/docker-compose.yml
       service: mongodb
+  petclinic-owner-service:
+    build: petclinic-owner-service
+    container_name: petclinic-owner-service
+    depends_on:
+      - mongodb
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/owners-db
+    ports:
+      - "9090:9090"
+

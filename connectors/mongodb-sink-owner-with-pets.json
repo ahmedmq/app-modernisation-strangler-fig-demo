@@ -7,7 +7,7 @@
     "value.converter.schemas.enable":false,
     "connection.uri":"mongodb://mongodb:27017",
     "database":"owners-db",
-    "collection": "owners-with-pets",
+    "collection": "owner-with-pets",
     "topics": "mongo.petclinic.owner.pets",
     "tasks.max": "1"
   }

@@ -12,6 +12,7 @@ v2.0.0                  Add Strangler Proxy
 v3.0.0                  Create new replacement service
 v4.1.0                  Setup Debezium for CDC from MySQL source
 v4.2.0                  Build data streaming pipeline to emit aggregated results 
+v4.3.0                  Setup sink connector to MongoDB
 ```
 
 ## Introduction
@@ -143,3 +144,42 @@ In order to achieve the above, we build a Kafka Streams application to join, agg
 - Once all the containers have started and the connector is running, we can use Kafka-UI [topic](http://localhost:8087/ui/clusters/local/all-topics/mongo.petclinic.owner.pets/messages?keySerde=String&valueSerde=String&limit=100) to see the nested record in the `mongo.petclinic.owner.pets` topic
 
 ![Kstream pipeline output](docs/join_topic.png)
+
+### v4.3.0 - Setup Debezium sink connector to MongoDB
+<hr/>
+
+Previous tag showcased joining two CDC streams created by Debezium into a single topic and in this step we sink the aggregated change events to MongoDB using [Kafka Connect MongoDB sink connector](https://www.mongodb.com/docs/kafka-connector/current/).
+
+![Setup Mongo Sink](docs/cdc_mongo_sink.png)
+
+- From the root of the project, run the following command
+    ```bash
+    docker compose up -d
+    ```
+  This will start 10 containers which include the Spring PetClinic app, MySQL database, Kafka, Zookeeper, Kafka Connect, Kafka UI, NGINX, kstream-owner-pet-table-join, MongoDB and petclinic-owner-service docker containers
+
+
+- Wait for all docker containers to be up and running. Check using,
+    ```bash
+    docker compose ps
+    ```
+  
+- Run the following `curl` commands to create `Debezium` connectors in `kafka-connect`
+
+    ```bash
+      curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mysql-source-owners-pets.json
+    ```
+ 
+- Run the following `curl` command to create the MongoDB connector in `kafka-connect`
+
+  ```bash
+     curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mongodb-sink-owner-with-pets.json
+  ```
+
+- Access the [Kafka UI](http://localhost:8087/ui/clusters/local/connectors) to verify if both the connectors are RUNNING
+  
+  ![Kafka UI Source Sink Connectors](docs/kafka-ui-source-sink.png)
+
+
+- Access the [PetClinic Owner service](http://localhost:9090/owners?lastName=) to verify the Owner and Pet data is stored in MongoDB
+![PetClinic Owners](docs/petclinic_owners.png)
