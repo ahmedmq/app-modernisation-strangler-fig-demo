@@ -194,6 +194,6 @@ Update the [NGINX proxy configuration](docker/nginx/config/nginx.conf) to route 
 
 Follow the steps from the previous tag to start all containers and set up the Kafka connectors. 
 
-Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners`) to the new `petclinic-owner-service`
+Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners/search`, `/owners`) to the new `petclinic-owner-service`
 
 ![Read Strangler GIF](docs/read_strangler.gif)

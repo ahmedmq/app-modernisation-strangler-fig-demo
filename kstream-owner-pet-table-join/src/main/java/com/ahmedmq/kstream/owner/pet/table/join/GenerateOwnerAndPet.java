@@ -22,6 +22,10 @@ public class GenerateOwnerAndPet {
     public static final String PETS_TOPIC = "mysql.petclinic.pets";
     public static final String OWNERS_TOPIC = "mysql.petclinic.owners";
 
+    public static void main(String[] args) {
+        GenerateOwnerAndPet generateOwnerAndPet = new GenerateOwnerAndPet();
+        generateOwnerAndPet.insertData();
+    }
     public void insertData() {
 
         Serde<Owner> ownerSerde = new JsonSerde<>(Owner.class);

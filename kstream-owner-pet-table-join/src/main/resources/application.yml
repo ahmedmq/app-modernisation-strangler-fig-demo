@@ -12,9 +12,11 @@ spring:
         streams:
           binder:
             configuration:
+              commit.interval.ms: 500
               default:
-                key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                key.serde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
                 value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+            application-id: pet-owner-join
           bindings:
             KStreamPetOwnerJoinTopology-in-0:
               consumer:
@@ -26,7 +28,7 @@ spring:
                 valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.PetJsonSerde
             KStreamPetOwnerJoinTopology-out-0:
               producer:
-                keySerde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+                keySerde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
                 valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerWithPetsSerde
     function:
       definition: KStreamPetOwnerJoinTopology

@@ -9,6 +9,10 @@
     "database":"owners-db",
     "collection": "owner-with-pets",
     "topics": "mongo.petclinic.owner.pets",
-    "tasks.max": "1"
+    "tasks.max": "1",
+    "document.id.strategy": "com.mongodb.kafka.connect.sink.processor.id.strategy.PartialValueStrategy",
+    "document.id.strategy.partial.value.projection.list": "owner.id",
+    "document.id.strategy.partial.value.projection.type": "AllowList",
+    "writemodel.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy"
   }
 }

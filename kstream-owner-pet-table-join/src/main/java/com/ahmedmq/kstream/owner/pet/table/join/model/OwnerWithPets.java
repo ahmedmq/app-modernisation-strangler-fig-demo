@@ -16,22 +16,27 @@ public class OwnerWithPets {
     public Owner owner;
     public List<Pet> pets = new ArrayList<>();
 
-    public OwnerWithPets addPet(PetAndOwner petAndOwner) {
-        LOGGER.info("Adding: " + petAndOwner);
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
 
-        owner = petAndOwner.owner();
-        pets.add(petAndOwner.pet());
+
+    public OwnerWithPets addPet(Owner owner, Pet pet) {
+        LOGGER.info("Adding owner: {} and pet {} ", owner, pet);
+
+        this.owner = owner;
+        this.pets.add(pet);
 
         return this;
     }
 
-    public OwnerWithPets removePet(PetAndOwner petAndOwner) {
-        LOGGER.info("Removing: " + petAndOwner);
+    public OwnerWithPets removePet(Pet pet) {
+        LOGGER.info("Removing: {}" , pet);
 
-        Iterator<Pet> it = pets.iterator();
+        Iterator<Pet> it = this.pets.iterator();
         while (it.hasNext()) {
             Pet p = it.next();
-            if (Objects.equals(p.id(), petAndOwner.pet().id())) {
+            if (Objects.equals(p.id(), pet.id())) {
                 it.remove();
                 break;
             }
