@@ -13,6 +13,7 @@ v3.0.0                  Create new replacement service
 v4.1.0                  Setup Debezium for CDC from MySQL source
 v4.2.0                  Build data streaming pipeline to emit aggregated results 
 v4.3.0                  Setup sink connector to MongoDB
+v5.0.0                  Route owner read requests to new service
 ```
 
 ## Introduction
@@ -69,7 +70,7 @@ In this step, only the READ functionality is implemented within the new microser
 
 | Description      | HTTP Method | API               | Implemented |
 |------------------|-------------|-------------------|-------------|
-| Find Owners      | GET         | /owners/find      | Yes         |
+| Find Owners      | GET         | /owners/search    | Yes         |
 | List All Owners  | GET         | /owners           | Yes         |
 | Get Owner by Id  | GET         | /owners/{id}      | Yes         |
 | Create New Owner | POST        | /owners/new       | No          |
@@ -183,3 +184,16 @@ Previous tag showcased joining two CDC streams created by Debezium into a single
 
 - Access the [PetClinic Owner service](http://localhost:9090/owners?lastName=) to verify the Owner and Pet data is stored in MongoDB
 ![PetClinic Owners](docs/petclinic_owners.png)
+
+### v5.0.0 - Route owner read requests to new service
+<hr/>
+       
+Update the [NGINX proxy configuration](docker/nginx/config/nginx.conf) to route requests matching the owner read functionality from the monolith to the new service.
+
+![Read Strangler](docs/read_strangler.png)
+
+Follow the steps from the previous tag to start all containers and set up the Kafka connectors. 
+
+Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners`) to the new `petclinic-owner-service`
+
+![Read Strangler GIF](docs/read_strangler.gif)
