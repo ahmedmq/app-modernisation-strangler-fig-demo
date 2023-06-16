@@ -72,7 +72,7 @@ class OwnerWithPetsControllerTest {
 
     @Test
     fun testInitFindForm() {
-        mockMvc.perform(get("/owners/find"))
+        mockMvc.perform(get("/owners/search"))
                 .andExpect(status().isOk)
                 .andExpect(model().attributeExists("owner"))
                 .andExpect(view().name("owners/findOwners"))

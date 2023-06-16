@@ -11,7 +11,7 @@ import java.util.*
 @Controller
 class OwnerWithPetsController(val ownerWithPetsRepository: OwnerWithPetsRepository) {
 
-    @GetMapping("/owners/find")
+    @GetMapping("/owners/search")
     fun initFindForm(model: MutableMap<String, Any>): String {
         model["owner"] = Owner()
         return "owners/findOwners"
