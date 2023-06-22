@@ -5,6 +5,11 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
+	application
+}
+
+application {
+	mainClass.set("org.springframework.samples.petclinic.owner.PetClinicOwnerServiceApplicationKt")
 }
 
 group = "org.springframework.samples"
@@ -13,6 +18,8 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 val boostrapVersion = "5.1.3"
 val fontAwesomeVersion = "4.7.0"
+
+
 
 repositories {
 	mavenCentral()

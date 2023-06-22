@@ -30,13 +30,16 @@ The following should be installed in your system:
     ```bash
     docker compose up -d
     ```
-  This will start the Mongo DB as a container.
+  This will start MongoDB, Kafka, Kafka Connect, Zookeeper and MongoDB replica set, Kafka UI containers
 
 
 - Run the following command 
     ```bash
     ./gradlew bootRun
     ```
+
+- Run the Java class `GenerateOwnerPetData` to generate sample data for the `owner-with-pets` collection in MongoDB
+
 
 - Update `/etc/hosts` file in your local system to map a sample domain to `localhost`
 
@@ -48,5 +51,13 @@ The following should be installed in your system:
   ```text
   127.0.0.1 petclinic-owner-service.demo
   ```
-
 You can then access PetClinic here: [http://petclinic-owner-service.demo:9090](http://petclinic-owner-service.demo:9090)
+
+- Run the following `curl` commands to create MongoDB Source connectors in `kafka-connect`
+
+    ```bash
+      curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mongodb-source-owner-with-pets.json
+    ```
+- Edit a specific owner by access the [Petclinic](http://petclinic-owner-service.demo:9090) UI. Watch the change events propagate to the `mongo.owners-db.owner-with-pets` topic using the Kafka UI
+
+

@@ -56,7 +56,8 @@ class OwnerWithPetsControllerIT {
                         id = 1,
                         name = "Max",
                         birthDate = LocalDate.now().toString(),
-                        type = 1
+                        type = 1,
+                        ownerId = 1
                 )))
 
         ownerWithPetsRepository.save(georgeWithMax)

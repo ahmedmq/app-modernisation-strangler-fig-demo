@@ -10,28 +10,30 @@ data class OwnerWithPets(
         @Id
         @Field(name = "_id")
         val id: ObjectId = ObjectId(),
-        val owner: Owner,
-        val pets: MutableSet<Pet> = HashSet()
+        var owner: Owner,
+        var pets: MutableSet<Pet> = HashSet()
 )
 
 data class Owner(
         @Field("id")
-        val id: Long=0L,
+        var id: Long=0L,
         @Field(name = "first_name")
-        val firstName: String = "",
+        var firstName: String = "",
         @Field(name = "last_name")
-        val lastName: String = "",
-        val city: String = "",
-        val address: String = "",
-        val telephone: String = ""
+        var lastName: String = "",
+        var city: String = "",
+        var address: String = "",
+        var telephone: String = ""
 )
 
 data class Pet(
         @Field("id")
-        val id: Long=0L,
-        val name: String = "",
+        var id: Long=0L,
+        var name: String = "",
         @Field(name = "birth_date")
-        val birthDate: String = "",
+        var birthDate: String = "",
         @Field(name = "type_id")
-        val type: Int
+        var type: Int,
+        @Field(name = "owner_id")
+        var ownerId: Int
 )

@@ -43,7 +43,8 @@ class OwnerWithPetsControllerTest {
                         id = 1,
                         name = "Max",
                         birthDate = LocalDate.now().toString(),
-                        type = 1
+                        type = 1,
+                        ownerId = 1
                 )))
         given(ownerWithPetsRepository.findById(georgeWithMax.id.toHexString())).willReturn(Optional.of(georgeWithMax))
         franklinWithLeo = OwnerWithPets(
@@ -59,7 +60,8 @@ class OwnerWithPetsControllerTest {
                         id = 1,
                         name = "Leo",
                         birthDate = LocalDate.now().toString(),
-                        type = 1
+                        type = 1,
+                        ownerId = 1
                 ))
         )
     }
