@@ -135,6 +135,17 @@ services:
     extends:
       file: petclinic-owner-service/docker-compose.yml
       service: mongodb
+
+  mongodb-rs:
+    extends:
+      file: petclinic-owner-service/docker-compose.yml
+      service: mongodb-rs
+
+  mongo-init:
+    extends:
+      file: petclinic-owner-service/docker-compose.yml
+      service: mongo-init
+
   petclinic-owner-service:
     build: petclinic-owner-service
     container_name: petclinic-owner-service
