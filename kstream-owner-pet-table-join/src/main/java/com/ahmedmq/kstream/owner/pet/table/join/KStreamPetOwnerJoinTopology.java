@@ -43,9 +43,7 @@ public class KStreamPetOwnerJoinTopology implements BiFunction<KTable<DefaultId,
                             aggregate.addPet(null, value);
                             return aggregate;
                         },
-                        Materialized.<DefaultId, OwnerWithPets, KeyValueStore<Bytes, byte[]>>as("pet-by-owner-id-store")
-                                .withKeySerde(defaultIdSerde)
-                                .withValueSerde(ownerWithPetsSerde));
+                        Materialized.with(defaultIdSerde, ownerWithPetsSerde));
 
         return
                 ownerKTable.leftJoin(petByOwnerIdKTable, (owner, pets) -> {

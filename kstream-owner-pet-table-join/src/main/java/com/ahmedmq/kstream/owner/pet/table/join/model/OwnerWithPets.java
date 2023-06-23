@@ -20,6 +20,13 @@ public class OwnerWithPets {
         this.owner = owner;
     }
 
+    public OwnerWithPets() {
+    }
+
+    public OwnerWithPets(Owner owner, List<Pet> pets) {
+        this.owner = owner;
+        this.pets = pets;
+    }
 
     public OwnerWithPets addPet(Owner owner, Pet pet) {
         LOGGER.info("Adding owner: {} and pet {} ", owner, pet);

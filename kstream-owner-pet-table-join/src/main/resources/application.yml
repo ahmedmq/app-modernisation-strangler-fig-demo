@@ -1,5 +1,7 @@
 spring:
   cloud:
+    function:
+      definition: KStreamPetOwnerJoinTopology;KStreamUnwrapPetOwnerTopology
     stream:
       bindings:
         KStreamPetOwnerJoinTopology-in-0:
@@ -8,6 +10,12 @@ spring:
           destination: mysql.petclinic.pets
         KStreamPetOwnerJoinTopology-out-0:
           destination: mongo.petclinic.owner.pets
+        KStreamUnwrapPetOwnerTopology-in-0:
+          destination: mongo.owners-db.owner-with-pets
+        KStreamUnwrapPetOwnerTopology-out-0:
+          destination: kstream.owners.unwrap
+        KStreamUnwrapPetOwnerTopology-out-1:
+          destination: kstream.pets.unwrap
       kafka:
         streams:
           binder:
@@ -16,7 +24,11 @@ spring:
               default:
                 key.serde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
                 value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-            application-id: pet-owner-join
+            functions:
+              KStreamPetOwnerJoinTopology:
+                application-id: pet-owner-join
+              KStreamUnwrapPetOwnerTopology:
+                application-id: pet-owner-unwrap
           bindings:
             KStreamPetOwnerJoinTopology-in-0:
               consumer:
@@ -30,8 +42,18 @@ spring:
               producer:
                 keySerde: com.ahmedmq.kstream.owner.pet.table.join.serde.DefaultIdSerde
                 valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerWithPetsSerde
-    function:
-      definition: KStreamPetOwnerJoinTopology
+            KStreamUnwrapPetOwnerTopology-in-0:
+              consumer:
+                keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerWithPetsSerde
+            KStreamUnwrapPetOwnerTopology-out-0:
+              producer:
+                keySerde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.OwnerJsonSerde
+            KStreamUnwrapPetOwnerTopology-out-1:
+              producer:
+                keySerde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+                valueSerde: com.ahmedmq.kstream.owner.pet.table.join.serde.PetJsonSerde
 server:
   port: 8084
 #logging:
