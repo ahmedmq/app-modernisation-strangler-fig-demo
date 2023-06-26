@@ -14,6 +14,7 @@ v4.1.0                  Setup Debezium for CDC from MySQL source
 v4.2.0                  Build data streaming pipeline to emit aggregated results 
 v4.3.0                  Setup sink connector to MongoDB
 v5.0.0                  Route owner read requests to new service
+v6.0.0                  Route owner write requests to new service
 ```
 
 ## Introduction
@@ -197,3 +198,73 @@ Follow the steps from the previous tag to start all containers and set up the Ka
 Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners/search`, `/owners`) to the new `petclinic-owner-service`
 
 ![Read Strangler GIF](docs/read_strangler.gif)
+
+### v6.0.0 - Route owner write requests to new service
+<hr/>
+
+The next step in the strangler pattern is to route the Owner write requests to the new service. In addition, we also stream the change events from the new service to Kafka. This is to ensure that the new service is the single source of truth for the owner data.
+
+![Write Strangler](docs/cdc_write.png)
+
+- Build the owner write functionality into the new microservice. The new owner service exposes the following REST endpoints
+
+| Description      | HTTP Method | API               | Implemented |
+|------------------|-------------|-------------------|-------------|
+| Find Owners      | GET         | /owners/search    | Yes         |
+| List All Owners  | GET         | /owners           | Yes         |
+| Get Owner by Id  | GET         | /owners/{id}      | Yes         |
+| Create New Owner | POST        | /owners/new       | Yes         |
+| Edit Owner       | POST        | /owners/{id}/edit | Yes         |
+
+- Update the [NGINX proxy configuration](docker/nginx/config/nginx.conf) to route requests matching the owner write functionality from the monolith to the new service.
+
+
+- Configure the MongoDB source connector to push change events to Kafka
+
+
+- Update the kstream pet join application to unwrap the combined owner with pet events to individual owner and pet events and publish to separate Kafka topics
+
+To get started with this tag:
+
+- From the root of the project, run the following command
+
+    ```bash
+    docker compose up -d
+    ```
+  This will start 10 containers which include the Spring PetClinic app, MySQL database, Kafka, Zookeeper, Kafka Connect, Kafka UI, NGINX, kstream-owner-pet-table-join, MongoDB and petclinic-owner-service docker containers
+
+
+- Wait for all docker containers to be up and running. Check using,
+
+    ```bash
+    docker compose ps
+    ```
+
+- Run the following `curl` commands to create `Debezium` connectors in `kafka-connect`
+
+    ```bash
+      curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mysql-source-owners-pets.json
+    ```
+
+- Run the following `curl` command to create the MongoDB sink connector in `kafka-connect`
+
+  ```bash
+     curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mongodb-sink-owner-with-pets.json
+  ```
+
+- Run the following `curl` command to create the MongoDB source connector in `kafka-connect`
+
+  ```bash
+     curl -i -X POST localhost:8083/connectors -H 'Content-Type: application/json' -d @connectors/mongodb-source-owner-with-pets.json
+  ```
+
+- Access the [Kafka UI](http://localhost:8087/ui/clusters/local/connectors) to verify if both the connectors are RUNNING
+
+  ![Strangler Write Kafka UI](docs/strangler_write_kafka_ui_connector.png)
+
+
+- Access the [PetClinic application](http://strangler-fig.demo) to update the Owner and Pet data. The write requests are routed to the new service and the change events are streamed to Kafka
+   
+Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners/search`, `/owners`, `/owners/edit/**`, `/owners/new`) to the new `petclinic-owner-service`. The updates to the owner and pet data are streamed to Kafka.
+
+![Write Strangler GIF](docs/strangler_write.gif)
