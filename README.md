@@ -268,3 +268,8 @@ To get started with this tag:
 Here is a quick screencast of the strangler implementation. The configuration routes all requests to the legacy monolith, except specific routes (`/owners/search`, `/owners`, `/owners/edit/**`, `/owners/new`) to the new `petclinic-owner-service`. The updates to the owner and pet data are streamed to Kafka.
 
 ![Write Strangler GIF](docs/strangler_write.gif)
+
+### References
+
+- [Strangler Pattern](https://www.martinfowler.com/bliki/StranglerFigApplication.html)
+- [Dissecting our Legacy](https://github.com/hpgrahsl/ks21-strangler-fig-pattern/tree/main)
